@@ -1,12 +1,14 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { FileText, ArrowLeft, Download, CheckCircle2, Loader2 } from "lucide-react"
+import { FileText, ArrowLeft, CheckCircle2, Loader2 } from "lucide-react"
 import type { SkinFormData } from "./skin-types"
+import { REPORT_STORAGE_KEY } from "@/components/report-page"
 
 interface SkinResultsViewProps {
   formData: SkinFormData
@@ -55,25 +57,8 @@ const resultsData = {
 
 type SkinProblemKey = keyof typeof resultsData
 
-async function downloadSkinGuide(problem: SkinProblemKey, name: string, fileName: string) {
-  const params = new URLSearchParams({ problem, name })
-  const response = await fetch(`/api/skin-guide?${params.toString()}`)
-  if (!response.ok) {
-    throw new Error("Failed to generate PDF")
-  }
-
-  const blob = await response.blob()
-  const blobUrl = window.URL.createObjectURL(blob)
-  const link = document.createElement("a")
-  link.href = blobUrl
-  link.download = fileName
-  document.body.appendChild(link)
-  link.click()
-  document.body.removeChild(link)
-  window.URL.revokeObjectURL(blobUrl)
-}
-
 export function SkinResultsView({ formData, capturedImage, onBack }: SkinResultsViewProps) {
+  const router = useRouter()
   const [pdfFormOpen, setPdfFormOpen] = useState(false)
   const [pdfGenerating, setPdfGenerating] = useState(false)
   const [pdfForm, setPdfForm] = useState({ name: formData.name || "", phone: formData.phone || "" })
@@ -108,15 +93,20 @@ export function SkinResultsView({ formData, capturedImage, onBack }: SkinResults
         throw new Error(payload?.error || "Failed to save scan")
       }
 
-      await downloadSkinGuide(problem, pdfForm.name.trim(), `${data.docTitle.replace(/\s+/g, "_")}.pdf`)
       setPdfFormOpen(false)
-      window.location.assign("/thank-you")
+      window.sessionStorage.setItem(REPORT_STORAGE_KEY, JSON.stringify({
+        kind: "skin",
+        problem,
+        name: pdfForm.name.trim(),
+        scannedImage: capturedImage,
+      }))
+      router.push("/report")
     } catch (err) {
-      console.error("Submit/download failed:", err)
+      console.error("Submit/report open failed:", err)
       if (err instanceof Error && err.message.includes("Failed to save scan")) {
         alert(`Database save failed: ${err.message}`)
       } else {
-        alert("Unable to generate the PDF right now.")
+        alert("Unable to open the report right now.")
       }
     } finally {
       setPdfGenerating(false)
@@ -161,8 +151,8 @@ export function SkinResultsView({ formData, capturedImage, onBack }: SkinResults
         </div>
 
         <button onClick={handleDownload} disabled={pdfGenerating} className="mobile-dl-btn" style={{ alignItems: "center", justifyContent: "center", gap: "8px", width: "100%", marginBottom: "20px", background: "#ddb95a", color: "#080b12", border: "none", borderRadius: "12px", padding: "14px", fontSize: "1rem", fontWeight: 700, cursor: pdfGenerating ? "not-allowed" : "pointer", opacity: pdfGenerating ? 0.7 : 1, boxShadow: "0 0 24px rgba(221,185,90,0.3)" }}>
-          {pdfGenerating ? <Loader2 style={{ width: 18, height: 18, animation: "spin 1s linear infinite" }} /> : <Download style={{ width: 18, height: 18 }} />}
-          {pdfGenerating ? "Generating..." : "Download PDF"}
+          {pdfGenerating ? <Loader2 style={{ width: 18, height: 18, animation: "spin 1s linear infinite" }} /> : <FileText style={{ width: 18, height: 18 }} />}
+          {pdfGenerating ? "Preparing..." : "View Report"}
         </button>
 
         <div style={{ background: "linear-gradient(145deg, #0e1118, #0a0d15)", border: "1px solid rgba(221,185,90,0.2)", borderRadius: "18px", padding: "28px", marginBottom: "20px", position: "relative", overflow: "hidden", boxShadow: "0 4px 30px rgba(0,0,0,0.4), inset 0 1px 0 rgba(221,185,90,0.07)" }}>
@@ -184,8 +174,8 @@ export function SkinResultsView({ formData, capturedImage, onBack }: SkinResults
               <p style={{ fontSize: "0.82rem", color: "#8a8a8a", lineHeight: 1.5 }}>{data.docDescription}</p>
             </div>
             <button onClick={handleDownload} disabled={pdfGenerating} className="pdf-dl-btn" style={{ alignItems: "center", gap: "8px", background: "#ddb95a", color: "#080b12", border: "none", borderRadius: "10px", padding: "11px 22px", fontSize: "0.9rem", fontWeight: 700, cursor: pdfGenerating ? "not-allowed" : "pointer", opacity: pdfGenerating ? 0.7 : 1, boxShadow: "0 0 20px rgba(221,185,90,0.3)", transition: "all 0.2s" }}>
-              {pdfGenerating ? <Loader2 style={{ width: 16, height: 16, animation: "spin 1s linear infinite" }} /> : <Download style={{ width: 16, height: 16 }} />}
-              {pdfGenerating ? "Generating..." : "Download PDF"}
+              {pdfGenerating ? <Loader2 style={{ width: 16, height: 16, animation: "spin 1s linear infinite" }} /> : <FileText style={{ width: 16, height: 16 }} />}
+              {pdfGenerating ? "Preparing..." : "View Report"}
             </button>
           </div>
         </div>
@@ -212,16 +202,16 @@ export function SkinResultsView({ formData, capturedImage, onBack }: SkinResults
       <Dialog open={pdfFormOpen} onOpenChange={(open) => !pdfGenerating && setPdfFormOpen(open)}>
         <DialogContent data-pdf-dialog className="border-primary/20 bg-card/95 backdrop-blur-xl sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-center text-xl font-bold text-foreground">Download Your Guide</DialogTitle>
+            <DialogTitle className="text-center text-xl font-bold text-foreground">View Your Guide</DialogTitle>
             <DialogDescription className="text-center text-sm text-muted-foreground">
-              {pdfGenerating ? "Generating your PDF, please wait..." : "Enter your name and phone number to generate the PDF"}
+              {pdfGenerating ? "Preparing your report, please wait..." : "Enter your name and phone number to open the report"}
             </DialogDescription>
           </DialogHeader>
 
           {pdfGenerating ? (
             <div className="flex flex-col items-center gap-4 py-8">
               <Loader2 className="h-10 w-10 animate-spin text-primary" />
-              <p className="text-sm text-muted-foreground">Building your personalized guide...</p>
+              <p className="text-sm text-muted-foreground">Opening your personalized guide...</p>
             </div>
           ) : (
             <form onSubmit={handlePdfFormSubmit} className="mt-4 flex flex-col gap-5">
@@ -234,8 +224,8 @@ export function SkinResultsView({ formData, capturedImage, onBack }: SkinResults
                 <Input id="skin-pdf-phone" type="tel" placeholder="Enter your phone number" value={pdfForm.phone} onChange={(e) => setPdfForm({ ...pdfForm, phone: e.target.value })} className="border-border/50 bg-background/50 focus:border-primary focus:ring-primary" />
               </div>
               <Button type="submit" disabled={!pdfForm.name.trim() || !pdfForm.phone.trim()} className="mt-2 w-full bg-primary text-primary-foreground transition-all hover:bg-primary/90 hover:shadow-[0_0_20px_rgba(221,185,90,0.4)] disabled:opacity-50">
-                <Download className="mr-2 h-4 w-4" />
-                Generate & Download PDF
+                <FileText className="mr-2 h-4 w-4" />
+                View Report
               </Button>
             </form>
           )}

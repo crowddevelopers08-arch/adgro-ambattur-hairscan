@@ -1,12 +1,14 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { ArrowLeft, CheckCircle2, ChevronRight, FileText, Loader2, Phone } from "lucide-react"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import type { FormData } from "./form-modal"
-import { HairReportDetails, type HairProblemKey } from "./hair-report-details"
+import type { HairProblemKey } from "./hair-report-details"
+import { REPORT_STORAGE_KEY } from "./report-page"
 
 interface ResultsViewProps {
   formData: FormData
@@ -65,9 +67,9 @@ const resultsData: Record<HairProblemKey, {
 }
 
 export function ResultsView({ formData, capturedImage, onBack }: ResultsViewProps) {
+  const router = useRouter()
   const [detailsFormOpen, setDetailsFormOpen] = useState(false)
   const [submitting, setSubmitting] = useState(false)
-  const [reportVisible, setReportVisible] = useState(false)
   const [detailsForm, setDetailsForm] = useState({ name: formData.name || "", phone: formData.phone || "", location: "" })
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [locationSelect, setLocationSelect] = useState("")
@@ -104,7 +106,13 @@ export function ResultsView({ formData, capturedImage, onBack }: ResultsViewProp
         throw new Error(payload?.error || "Failed to save scan")
       }
       setDetailsFormOpen(false)
-      setReportVisible(true)
+      window.sessionStorage.setItem(REPORT_STORAGE_KEY, JSON.stringify({
+        kind: "hair",
+        problem,
+        name: detailsForm.name.trim(),
+        scannedImage: capturedImage,
+      }))
+      router.push("/report")
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Something went wrong"
       if (msg.includes("already been used")) {
@@ -202,52 +210,48 @@ export function ResultsView({ formData, capturedImage, onBack }: ResultsViewProp
           <p style={{ lineHeight: 1.8, color: "#5a5a5a", fontSize: "0.95rem" }}>{data.description}</p>
         </div>
 
-        {!reportVisible ? (
-          <div style={{
-            background: "linear-gradient(135deg, rgba(234,36,36,0.04), rgba(234,36,36,0.01))",
-            border: "1.5px dashed rgba(234,36,36,0.3)",
-            borderRadius: "20px", padding: "28px 30px",
-            marginBottom: "16px",
-            position: "relative", overflow: "hidden",
-          }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "20px", flexWrap: "wrap" }}>
-              <div style={{
-                width: 56, height: 56, borderRadius: "16px",
-                background: "rgba(234,36,36,0.08)",
-                border: "1px solid rgba(234,36,36,0.2)",
-                display: "flex", alignItems: "center", justifyContent: "center",
-                flexShrink: 0,
-              }}>
-                <FileText style={{ width: 26, height: 26, color: RED }} />
-              </div>
-              <div style={{ flex: 1, minWidth: "180px" }}>
-                <p style={{ fontWeight: 800, fontSize: "1rem", color: "#1a1a1a", marginBottom: "4px" }}>{data.docTitle}</p>
-                <p style={{ fontSize: "0.82rem", color: "#6b6b6b", lineHeight: 1.5 }}>{data.docDescription}</p>
-              </div>
-              <button
-                onClick={handleViewReport}
-                style={{
-                  display: "flex", alignItems: "center", gap: "8px",
-                  background: "linear-gradient(135deg, #ea2424, #c91f1f)",
-                  color: "#fff",
-                  border: "none", borderRadius: "100px",
-                  padding: "12px 24px", fontSize: "0.9rem", fontWeight: 700,
-                  cursor: "pointer",
-                  boxShadow: "0 6px 20px rgba(234,36,36,0.3)",
-                  transition: "all 0.2s",
-                  fontFamily: "inherit",
-                  flexShrink: 0,
-                }}
-              >
-                <FileText style={{ width: 16, height: 16 }} />
-                View Full Report
-                <ChevronRight style={{ width: 15, height: 15, opacity: 0.8 }} />
-              </button>
+        <div style={{
+          background: "linear-gradient(135deg, rgba(234,36,36,0.04), rgba(234,36,36,0.01))",
+          border: "1.5px dashed rgba(234,36,36,0.3)",
+          borderRadius: "20px", padding: "28px 30px",
+          marginBottom: "16px",
+          position: "relative", overflow: "hidden",
+        }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "20px", flexWrap: "wrap" }}>
+            <div style={{
+              width: 56, height: 56, borderRadius: "16px",
+              background: "rgba(234,36,36,0.08)",
+              border: "1px solid rgba(234,36,36,0.2)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              flexShrink: 0,
+            }}>
+              <FileText style={{ width: 26, height: 26, color: RED }} />
             </div>
+            <div style={{ flex: 1, minWidth: "180px" }}>
+              <p style={{ fontWeight: 800, fontSize: "1rem", color: "#1a1a1a", marginBottom: "4px" }}>{data.docTitle}</p>
+              <p style={{ fontSize: "0.82rem", color: "#6b6b6b", lineHeight: 1.5 }}>{data.docDescription}</p>
+            </div>
+            <button
+              onClick={handleViewReport}
+              style={{
+                display: "flex", alignItems: "center", gap: "8px",
+                background: "linear-gradient(135deg, #ea2424, #c91f1f)",
+                color: "#fff",
+                border: "none", borderRadius: "100px",
+                padding: "12px 24px", fontSize: "0.9rem", fontWeight: 700,
+                cursor: "pointer",
+                boxShadow: "0 6px 20px rgba(234,36,36,0.3)",
+                transition: "all 0.2s",
+                fontFamily: "inherit",
+                flexShrink: 0,
+              }}
+            >
+              <FileText style={{ width: 16, height: 16 }} />
+              View Full Report
+              <ChevronRight style={{ width: 15, height: 15, opacity: 0.8 }} />
+            </button>
           </div>
-        ) : (
-          <HairReportDetails problem={problem} scannedImage={capturedImage} />
-        )}
+        </div>
 
         <div style={{
           background: "#fff", border: "1px solid #eee",
