@@ -1,0 +1,699 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --background: #fff9f6;
+  --foreground: #161313;
+  --card: #ffffff;
+  --card-foreground: #1a1a1a;
+  --popover: #ffffff;
+  --popover-foreground: #1a1a1a;
+  --primary: #ea2424;
+  --primary-foreground: #ffffff;
+  --secondary: #fff0ec;
+  --secondary-foreground: #1a1a1a;
+  --muted: #fff3ee;
+  --muted-foreground: #6b5f5a;
+  --accent: #ea2424;
+  --accent-foreground: #ffffff;
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: #ffffff;
+  --border: #efd9d1;
+  --input: #fff8f5;
+  --ring: #ea2424;
+  --chart-1: #ea2424;
+  --chart-2: #c91f1f;
+  --chart-3: #a81a1a;
+  --chart-4: #f05050;
+  --chart-5: #8a1414;
+  --radius: 0.75rem;
+  --sidebar: #f0f0f0;
+  --sidebar-foreground: #1a1a1a;
+  --sidebar-primary: #ea2424;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #e8e8e8;
+  --sidebar-accent-foreground: #1a1a1a;
+  --sidebar-border: #e0e0e0;
+  --sidebar-ring: #ea2424;
+  --hair-red: #ea2424;
+  --hair-rose: #ff6b59;
+  --hair-ink: #161313;
+  --hair-cream: #fff8f3;
+  --hair-mint: #0d9488;
+  --skin-gold: #ddb95a;
+  --skin-champagne: #f6df9b;
+  --skin-ink: #090c14;
+  --skin-teal: #55d6be;
+}
+
+.dark {
+  --background: #ffffff;
+  --foreground: #1a1a1a;
+  --card: #f5f5f5;
+  --card-foreground: #1a1a1a;
+  --popover: #f0f0f0;
+  --popover-foreground: #1a1a1a;
+  --primary: #ea2424;
+  --primary-foreground: #ffffff;
+  --secondary: #e8e8e8;
+  --secondary-foreground: #1a1a1a;
+  --muted: #f0f0f0;
+  --muted-foreground: #6b6b6b;
+  --accent: #ea2424;
+  --accent-foreground: #ffffff;
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: #ffffff;
+  --border: #e0e0e0;
+  --input: #f5f5f5;
+  --ring: #ea2424;
+  --chart-1: #ea2424;
+  --chart-2: #c91f1f;
+  --chart-3: #a81a1a;
+  --chart-4: #f05050;
+  --chart-5: #8a1414;
+  --sidebar: #f0f0f0;
+  --sidebar-foreground: #1a1a1a;
+  --sidebar-primary: #ea2424;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #e8e8e8;
+  --sidebar-accent-foreground: #1a1a1a;
+  --sidebar-border: #e0e0e0;
+  --sidebar-ring: #ea2424;
+}
+
+@theme inline {
+  --font-sans: var(--font-outfit), 'Outfit', sans-serif;
+  --font-outfit: var(--font-outfit), 'Outfit', sans-serif;
+  --font-mono: 'Geist Mono', monospace;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-outfit), 'Outfit', sans-serif;
+    background:
+      radial-gradient(circle at 8% -5%, rgba(234, 36, 36, 0.08), transparent 30rem),
+      radial-gradient(circle at 95% 5%, rgba(13, 148, 136, 0.08), transparent 28rem),
+      linear-gradient(180deg, #fff9f6 0%, #ffffff 42%, #fff7f2 100%);
+  }
+  .font-outfit {
+    font-family: var(--font-outfit), 'Outfit', sans-serif;
+  }
+}
+
+/* ── Keyframes ── */
+@keyframes scan {
+  0%   { transform: translateX(-50%) translateY(0); }
+  100% { transform: translateX(-50%) translateY(400px); }
+}
+@keyframes scan-slow {
+  0%   { transform: translateY(0); }
+  100% { transform: translateY(200px); }
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50%       { transform: translateY(-20px) scale(1.05); }
+}
+@keyframes float-delayed {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50%       { transform: translateY(-30px) scale(1.1); }
+}
+@keyframes shimmer-x {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+@keyframes pulse-ring {
+  0%   { transform: scale(0.9); opacity: 1; }
+  100% { transform: scale(1.4); opacity: 0; }
+}
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes count-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.animate-scan         { animation: scan 2s linear infinite; }
+.animate-scan-slow    { animation: scan-slow 2s linear infinite; }
+.animate-float        { animation: float 6s ease-in-out infinite; }
+.animate-float-delayed{ animation: float-delayed 8s ease-in-out infinite; animation-delay: 1s; }
+.animate-shimmer-x    { animation: shimmer-x 1.6s ease-in-out infinite; }
+.animate-pulse-ring   { animation: pulse-ring 1.8s ease-out infinite; }
+.animate-fade-up      { animation: fade-up 0.6s cubic-bezier(0.22,1,0.36,1) forwards; }
+.animate-count-up     { animation: count-up 0.5s cubic-bezier(0.22,1,0.36,1) forwards; }
+
+/* ── Extra hero bg animations ── */
+@keyframes morph {
+  0%,100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
+  25%      { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; }
+  50%      { border-radius: 50% 60% 30% 60% / 30% 60% 60% 50%; }
+  75%      { border-radius: 70% 30% 50% 40% / 40% 50% 60% 50%; }
+}
+@keyframes orbit {
+  from { transform: rotate(0deg) translateX(140px) rotate(0deg); }
+  to   { transform: rotate(360deg) translateX(140px) rotate(-360deg); }
+}
+@keyframes orbit-reverse {
+  from { transform: rotate(0deg) translateX(100px) rotate(0deg); }
+  to   { transform: rotate(-360deg) translateX(100px) rotate(360deg); }
+}
+@keyframes drift {
+  0%,100% { transform: translate(0,0) scale(1); }
+  33%      { transform: translate(18px,-24px) scale(1.06); }
+  66%      { transform: translate(-14px,12px) scale(0.96); }
+}
+@keyframes drift2 {
+  0%,100% { transform: translate(0,0) scale(1); }
+  33%      { transform: translate(-20px,16px) scale(1.04); }
+  66%      { transform: translate(12px,-20px) scale(0.98); }
+}
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+@keyframes spin-slow-rev {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(-360deg); }
+}
+@keyframes wave-x {
+  0%,100% { transform: translateX(0); }
+  50%      { transform: translateX(-48px); }
+}
+
+.animate-morph        { animation: morph 10s ease-in-out infinite; }
+.animate-orbit        { animation: orbit 18s linear infinite; }
+.animate-orbit-rev    { animation: orbit-reverse 12s linear infinite; }
+.animate-drift        { animation: drift 9s ease-in-out infinite; }
+.animate-drift2       { animation: drift2 12s ease-in-out infinite; }
+.animate-spin-slow    { animation: spin-slow 30s linear infinite; }
+.animate-spin-slow-rev{ animation: spin-slow-rev 22s linear infinite; }
+.animate-wave-x       { animation: wave-x 8s ease-in-out infinite; }
+
+/* Premium page design layer */
+.hair-experience,
+.skin-experience {
+  position: relative;
+  isolation: isolate;
+  overflow-x: clip;
+}
+
+.hair-experience::before,
+.skin-experience::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+}
+
+.hair-experience::before {
+  background:
+    radial-gradient(circle at 12% 8%, rgba(234, 36, 36, 0.11), transparent 24rem),
+    radial-gradient(circle at 88% 22%, rgba(13, 148, 136, 0.11), transparent 22rem),
+    radial-gradient(circle at 50% 105%, rgba(255, 183, 77, 0.11), transparent 26rem),
+    linear-gradient(135deg, #fffaf7 0%, #fff 45%, #fff2ef 100%);
+}
+
+.skin-experience::before {
+  background:
+    radial-gradient(circle at 15% 5%, rgba(221, 185, 90, 0.20), transparent 28rem),
+    radial-gradient(circle at 92% 18%, rgba(85, 214, 190, 0.13), transparent 24rem),
+    radial-gradient(circle at 50% 105%, rgba(130, 86, 255, 0.12), transparent 30rem),
+    linear-gradient(135deg, #080b12 0%, #111827 48%, #0c0f18 100%);
+}
+
+.hair-experience::after,
+.skin-experience::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.45;
+  background-image:
+    linear-gradient(rgba(234, 36, 36, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(13, 148, 136, 0.04) 1px, transparent 1px);
+  background-size: 72px 72px;
+  mask-image: linear-gradient(to bottom, #000 0%, transparent 80%);
+}
+
+.skin-experience::after {
+  background-image:
+    linear-gradient(rgba(221, 185, 90, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(85, 214, 190, 0.05) 1px, transparent 1px);
+}
+
+.hair-experience section {
+  background:
+    radial-gradient(circle at 8% 0%, rgba(234, 36, 36, 0.07), transparent 24rem),
+    radial-gradient(circle at 92% 18%, rgba(13, 148, 136, 0.06), transparent 22rem),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(255, 248, 244, 0.94)) !important;
+}
+
+.hair-experience section:nth-of-type(even) {
+  background:
+    radial-gradient(circle at 18% 20%, rgba(13, 148, 136, 0.07), transparent 22rem),
+    radial-gradient(circle at 82% 0%, rgba(234, 36, 36, 0.06), transparent 25rem),
+    linear-gradient(180deg, rgba(255, 252, 249, 0.96), rgba(255, 255, 255, 0.92)) !important;
+}
+
+.skin-experience section {
+  background:
+    radial-gradient(circle at 10% 0%, rgba(221, 185, 90, 0.12), transparent 24rem),
+    radial-gradient(circle at 88% 12%, rgba(85, 214, 190, 0.08), transparent 22rem),
+    linear-gradient(160deg, rgba(12, 15, 24, 0.98), rgba(16, 22, 34, 0.96)) !important;
+}
+
+.hair-experience .hair-hero-bg,
+.skin-experience .skin-hero-bg {
+  min-height: calc(100vh - 66px);
+}
+
+.hair-experience .hair-hero-bg {
+  background:
+    linear-gradient(118deg, rgba(255, 255, 255, 0.96) 0%, rgba(255, 250, 246, 0.88) 42%, rgba(255, 237, 232, 0.78) 100%),
+    radial-gradient(circle at 18% 24%, rgba(234, 36, 36, 0.16), transparent 22rem),
+    radial-gradient(circle at 78% 18%, rgba(13, 148, 136, 0.16), transparent 20rem),
+    radial-gradient(circle at 74% 92%, rgba(255, 183, 77, 0.20), transparent 24rem) !important;
+}
+
+.skin-experience .skin-hero-bg {
+  background:
+    linear-gradient(135deg, rgba(8, 11, 18, 0.96) 0%, rgba(17, 24, 39, 0.90) 48%, rgba(9, 12, 20, 0.98) 100%),
+    radial-gradient(circle at 18% 22%, rgba(221, 185, 90, 0.22), transparent 23rem),
+    radial-gradient(circle at 82% 20%, rgba(85, 214, 190, 0.13), transparent 22rem),
+    radial-gradient(circle at 50% 100%, rgba(130, 86, 255, 0.14), transparent 27rem) !important;
+}
+
+.hair-hero-bg::before,
+.skin-hero-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.hair-hero-bg::before {
+  background:
+    linear-gradient(90deg, rgba(234, 36, 36, 0.07) 1px, transparent 1px),
+    linear-gradient(rgba(13, 148, 136, 0.05) 1px, transparent 1px),
+    radial-gradient(circle at 50% 42%, rgba(255, 255, 255, 0.72), transparent 21rem);
+  background-size: 88px 88px, 88px 88px, auto;
+  mask-image: radial-gradient(ellipse 78% 68% at 50% 38%, #000 0%, transparent 78%);
+}
+
+.skin-hero-bg::before {
+  background:
+    linear-gradient(90deg, rgba(221, 185, 90, 0.08) 1px, transparent 1px),
+    linear-gradient(rgba(85, 214, 190, 0.05) 1px, transparent 1px),
+    radial-gradient(circle at 50% 38%, rgba(246, 223, 155, 0.08), transparent 22rem);
+  background-size: 84px 84px, 84px 84px, auto;
+  mask-image: radial-gradient(ellipse 76% 70% at 50% 36%, #000 0%, transparent 80%);
+}
+
+.hair-hero-bg::after,
+.skin-hero-bg::after {
+  content: "";
+  position: absolute;
+  inset: auto -10% -22% -10%;
+  height: 42%;
+  z-index: 0;
+  pointer-events: none;
+  filter: blur(0.2px);
+}
+
+.hair-hero-bg::after {
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(234, 36, 36, 0.13), transparent 52%),
+    linear-gradient(90deg, transparent, rgba(234, 36, 36, 0.16), rgba(13, 148, 136, 0.12), transparent);
+  clip-path: polygon(0 48%, 10% 44%, 23% 56%, 38% 40%, 52% 54%, 66% 42%, 82% 52%, 100% 38%, 100% 100%, 0 100%);
+}
+
+.skin-hero-bg::after {
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(221, 185, 90, 0.16), transparent 54%),
+    linear-gradient(90deg, transparent, rgba(221, 185, 90, 0.17), rgba(85, 214, 190, 0.11), transparent);
+  clip-path: polygon(0 46%, 13% 54%, 28% 42%, 44% 55%, 58% 39%, 73% 51%, 88% 43%, 100% 54%, 100% 100%, 0 100%);
+}
+
+.hair-hero-bg > div:not(:first-child),
+.skin-hero-bg > div:not(:first-child) {
+  position: relative;
+}
+
+.hair-hero-bg [style*="maxWidth: \"860px\""] {
+  padding: 18px 0 6px;
+}
+
+.hair-hero-bg [style*="gridTemplateColumns: \"repeat(4, 1fr)\""] {
+  background: linear-gradient(135deg, rgba(234, 36, 36, 0.14), rgba(13, 148, 136, 0.10)) !important;
+  box-shadow: 0 28px 90px rgba(83, 27, 20, 0.14), 0 0 0 1px rgba(255, 255, 255, 0.72) !important;
+}
+
+.hair-hero-bg [style*="rgba(255,255,255,0.92)"] {
+  background: rgba(255, 255, 255, 0.74) !important;
+}
+
+.skin-hero-bg .relative.z-10 {
+  padding-block: 28px;
+}
+
+.skin-hero-bg .relative.rounded-2xl {
+  background: rgba(8, 11, 18, 0.66) !important;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.34), 0 0 44px rgba(221, 185, 90, 0.13) !important;
+}
+
+.hair-experience header {
+  background: rgba(255, 250, 247, 0.82) !important;
+  border-bottom: 1px solid rgba(234, 36, 36, 0.14) !important;
+  box-shadow: 0 16px 48px rgba(78, 20, 20, 0.08) !important;
+}
+
+.hair-experience [style*="borderRadius: \"22px\""],
+.hair-experience [style*="borderRadius: \"24px\""],
+.hair-experience [style*="borderRadius: \"28px\""],
+.hair-experience [style*="borderRadius: \"20px\""],
+.skin-experience [style*="borderRadius: \"18px\""],
+.skin-experience [style*="borderRadius: \"20px\""],
+.skin-experience [style*="borderRadius: \"28px\""] {
+  backdrop-filter: blur(18px);
+}
+
+.is-step-card,
+.is-benefit-card,
+.is-stat-card {
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.96), rgba(255, 248, 244, 0.90)) !important;
+  border: 1px solid rgba(234, 36, 36, 0.16) !important;
+  box-shadow:
+    0 20px 60px rgba(83, 27, 20, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95) !important;
+}
+
+.is-step-card::before,
+.is-stat-card::before,
+.is-benefit-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 15% 0%, rgba(234, 36, 36, 0.08), transparent 12rem),
+    radial-gradient(circle at 100% 100%, rgba(13, 148, 136, 0.07), transparent 10rem);
+}
+
+.is-benefit-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.is-step-card:hover,
+.is-benefit-card:hover,
+.is-stat-card:hover {
+  transform: translateY(-6px) !important;
+  box-shadow:
+    0 26px 72px rgba(83, 27, 20, 0.13),
+    0 0 0 4px rgba(234, 36, 36, 0.04) !important;
+}
+
+.info-grid-3 > div,
+.info-grid-4 > div,
+.info-grid-2 > div:last-child > div,
+.info-cta-card,
+.pdf-card-inner,
+[data-pdf-dialog] {
+  backdrop-filter: blur(18px);
+}
+
+.info-grid-3 > div,
+.info-grid-4 > div,
+.info-grid-2 > div:last-child > div {
+  background:
+    linear-gradient(145deg, rgba(18, 24, 38, 0.94), rgba(8, 11, 18, 0.92)) !important;
+  border: 1px solid rgba(221, 185, 90, 0.24) !important;
+  box-shadow:
+    0 24px 70px rgba(0, 0, 0, 0.42),
+    inset 0 1px 0 rgba(246, 223, 155, 0.10) !important;
+}
+
+.info-grid-3 > div:hover,
+.info-grid-4 > div:hover,
+.info-grid-2 > div:last-child > div:hover {
+  transform: translateY(-5px);
+  border-color: rgba(221, 185, 90, 0.42) !important;
+  box-shadow:
+    0 30px 80px rgba(0, 0, 0, 0.48),
+    0 0 34px rgba(221, 185, 90, 0.08) !important;
+}
+
+.info-side-image,
+.is-image {
+  filter: saturate(1.06) contrast(1.02);
+}
+
+.info-side-image {
+  border-color: rgba(221, 185, 90, 0.34) !important;
+  box-shadow:
+    0 22px 62px rgba(0, 0, 0, 0.38),
+    0 0 0 1px rgba(246, 223, 155, 0.10) !important;
+}
+
+.is-image {
+  border-color: rgba(234, 36, 36, 0.18) !important;
+  box-shadow:
+    0 22px 60px rgba(83, 27, 20, 0.14),
+    0 0 0 1px rgba(255, 255, 255, 0.7) !important;
+}
+
+.hair-experience button,
+.hair-experience a[href^="tel"],
+.skin-experience button,
+.skin-experience a[href^="tel"] {
+  transform: translateZ(0);
+}
+
+.hair-experience button:focus-visible,
+.hair-experience a:focus-visible,
+.skin-experience button:focus-visible,
+.skin-experience a:focus-visible {
+  outline: 3px solid rgba(13, 148, 136, 0.32);
+  outline-offset: 3px;
+}
+
+@media (max-width: 640px) {
+  .hair-experience section,
+  .skin-experience section {
+    background-size: auto !important;
+  }
+
+  .hair-experience::after,
+  .skin-experience::after {
+    background-size: 48px 48px;
+  }
+}
+
+/* Component redesign pass */
+.hair-experience .is-step-card,
+.hair-experience .is-benefit-card,
+.hair-experience .is-stat-card,
+.hair-results-page [style*="background: \"#fff\""],
+.hair-results-page [style*="background: \"#fafafa\""],
+.hair-results-page [style*="background: \"linear-gradient(135deg, rgba(234,36,36,0.04)"] {
+  border: 1px solid rgba(234, 36, 36, 0.18) !important;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.88), rgba(255, 244, 238, 0.78)) !important;
+  box-shadow:
+    0 24px 68px rgba(101, 38, 24, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.92) !important;
+}
+
+.hair-results-page {
+  background:
+    radial-gradient(circle at 12% 0%, rgba(234, 36, 36, 0.12), transparent 26rem),
+    radial-gradient(circle at 88% 12%, rgba(13, 148, 136, 0.10), transparent 24rem),
+    linear-gradient(145deg, #fff8f4, #ffffff 42%, #fff0ea) !important;
+}
+
+.skin-results-page {
+  background:
+    radial-gradient(circle at 18% 0%, rgba(221, 185, 90, 0.18), transparent 26rem),
+    radial-gradient(circle at 88% 18%, rgba(85, 214, 190, 0.12), transparent 23rem),
+    linear-gradient(145deg, #080b12, #121827 48%, #090c14) !important;
+}
+
+.skin-results-page [style*="linear-gradient(145deg, #0e1118"],
+.skin-results-page [style*="linear-gradient(135deg, rgba(221,185,90"],
+.skin-results-page [style*="background: \"linear-gradient(145deg"],
+.skin-experience .info-grid-3 > div,
+.skin-experience .info-grid-4 > div,
+.skin-experience .info-grid-2 > div:last-child > div,
+.skin-experience .info-cta-card {
+  background:
+    linear-gradient(145deg, rgba(24, 31, 48, 0.94), rgba(8, 11, 18, 0.90)) !important;
+  border: 1px solid rgba(221, 185, 90, 0.34) !important;
+  box-shadow:
+    0 28px 82px rgba(0, 0, 0, 0.50),
+    inset 0 1px 0 rgba(246, 223, 155, 0.13),
+    0 0 38px rgba(221, 185, 90, 0.06) !important;
+}
+
+.hair-experience .is-step-card,
+.hair-experience .is-stat-card,
+.skin-experience .info-grid-3 > div,
+.skin-experience .info-grid-4 > div {
+  min-height: 100%;
+}
+
+.hair-experience .is-step-card h3,
+.hair-experience .is-stat-card p:first-of-type,
+.skin-experience .info-grid-3 h3,
+.skin-experience .info-grid-4 p:first-of-type {
+  letter-spacing: 0 !important;
+}
+
+.hair-experience button,
+.hair-experience a[href^="tel"],
+.hair-results-page button,
+.hair-results-page a[href^="tel"] {
+  border-radius: 14px !important;
+  box-shadow:
+    0 14px 34px rgba(234, 36, 36, 0.24),
+    inset 0 1px 0 rgba(255, 255, 255, 0.26) !important;
+}
+
+.skin-experience button,
+.skin-experience a[href^="tel"],
+.skin-results-page button,
+.skin-results-page a[href^="tel"] {
+  border-radius: 14px !important;
+  box-shadow:
+    0 16px 38px rgba(0, 0, 0, 0.34),
+    0 0 24px rgba(221, 185, 90, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18) !important;
+}
+
+.hair-experience button:hover,
+.hair-experience a[href^="tel"]:hover,
+.hair-results-page button:hover,
+.hair-results-page a[href^="tel"]:hover,
+.skin-experience button:hover,
+.skin-experience a[href^="tel"]:hover,
+.skin-results-page button:hover,
+.skin-results-page a[href^="tel"]:hover {
+  transform: translateY(-2px) scale(1.01) !important;
+}
+
+[data-slot="dialog-overlay"] {
+  background:
+    radial-gradient(circle at 50% 20%, rgba(234, 36, 36, 0.20), transparent 22rem),
+    rgba(8, 9, 12, 0.64) !important;
+  backdrop-filter: blur(10px);
+}
+
+[data-slot="dialog-content"] {
+  border-radius: 26px !important;
+  border: 1px solid rgba(234, 36, 36, 0.18) !important;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(234, 36, 36, 0.12), transparent 12rem),
+    radial-gradient(circle at 0% 100%, rgba(13, 148, 136, 0.10), transparent 12rem),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.96), rgba(255, 247, 242, 0.93)) !important;
+  box-shadow:
+    0 32px 100px rgba(0, 0, 0, 0.22),
+    0 0 0 1px rgba(255, 255, 255, 0.82) inset !important;
+  overflow: hidden;
+}
+
+[data-slot="dialog-content"]::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 5px;
+  background: linear-gradient(90deg, #ea2424, #ff806f, #0d9488);
+  z-index: 2;
+}
+
+.skin-experience ~ [data-slot="dialog-portal"] [data-slot="dialog-content"],
+.skin-results-page ~ [data-slot="dialog-portal"] [data-slot="dialog-content"],
+[data-pdf-dialog] {
+  border-color: rgba(221, 185, 90, 0.28) !important;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(221, 185, 90, 0.16), transparent 12rem),
+    radial-gradient(circle at 0% 100%, rgba(85, 214, 190, 0.10), transparent 12rem),
+    linear-gradient(145deg, rgba(18, 24, 38, 0.96), rgba(8, 11, 18, 0.94)) !important;
+}
+
+[data-slot="dialog-title"] {
+  letter-spacing: 0 !important;
+}
+
+input,
+select,
+[role="combobox"] {
+  border-radius: 12px !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72) !important;
+}
+
+.hair-experience [style*="width: 52"],
+.hair-experience [style*="width: 56"],
+.hair-results-page [style*="width: 52"],
+.hair-results-page [style*="width: 56"],
+.skin-experience [style*="width: 56"],
+.skin-results-page [style*="width: 52"],
+.skin-results-page [style*="width: 64"] {
+  box-shadow:
+    0 14px 34px rgba(234, 36, 36, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.55) !important;
+}
+
+.skin-experience [style*="width: 56"],
+.skin-results-page [style*="width: 52"],
+.skin-results-page [style*="width: 64"] {
+  box-shadow:
+    0 16px 38px rgba(0, 0, 0, 0.32),
+    0 0 22px rgba(221, 185, 90, 0.13),
+    inset 0 1px 0 rgba(246, 223, 155, 0.20) !important;
+}

@@ -1,0 +1,9 @@
+-- CreateTable
+CREATE TABLE "Scan" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "name" TEXT NOT NULL,
+    "phone" TEXT NOT NULL,
+    "problem" TEXT NOT NULL,
+    "imageData" TEXT NOT NULL,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
