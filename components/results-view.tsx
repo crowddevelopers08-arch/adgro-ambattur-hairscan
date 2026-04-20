@@ -246,7 +246,7 @@ export function ResultsView({ formData, capturedImage, onBack }: ResultsViewProp
             </div>
           </div>
         ) : (
-          <HairReportDetails problem={problem} />
+          <HairReportDetails problem={problem} scannedImage={capturedImage} />
         )}
 
         <div style={{
