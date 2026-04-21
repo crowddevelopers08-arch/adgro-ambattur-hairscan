@@ -35,6 +35,15 @@ const skinProblems = [
   "open-pores",
 ]
 
+const telecrmStatusLabels: Record<string, string> = {
+  Created: "Created in TeleCRM",
+  Updated: "Updated in TeleCRM",
+  synced: "Synced to TeleCRM",
+  skipped: "TeleCRM skipped",
+  error: "TeleCRM error",
+  not_synced: "Not synced",
+}
+
 type DashboardSearchParams = Promise<{
   q?: string
   problem?: string
@@ -98,6 +107,8 @@ export default async function DashboardPage({
 
   const hairScans = filteredScans.filter((scan) => isHairProblem(scan.problem))
   const skinScans = filteredScans.filter((scan) => isSkinProblem(scan.problem))
+  const syncedScans = filteredScans.filter((scan) => ["created", "updated", "synced"].includes(scan.telecrmStatus.toLowerCase()))
+  const telecrmErrorScans = filteredScans.filter((scan) => scan.telecrmStatus.toLowerCase() === "error")
 
   const renderScanGrid = (scans: typeof hairScans, title: string) => (
     <section className="rounded-3xl border border-border bg-card/60 p-5 shadow-sm">
@@ -142,6 +153,39 @@ export default async function DashboardPage({
                 {scan.location && (
                   <p className="text-sm text-muted-foreground">{scan.location}</p>
                 )}
+                <div className="flex flex-wrap gap-2 pt-1">
+                  <span className="rounded-full border border-border bg-muted px-3 py-1 text-xs font-medium text-foreground">
+                    Form: {scan.formName || "website leads"}
+                  </span>
+                  <span
+                    className={[
+                      "rounded-full border px-3 py-1 text-xs font-medium",
+                      scan.telecrmStatus.toLowerCase() === "error"
+                        ? "border-red-200 bg-red-50 text-red-700"
+                        : "border-emerald-200 bg-emerald-50 text-emerald-700",
+                    ].join(" ")}
+                  >
+                    {telecrmStatusLabels[scan.telecrmStatus] ?? scan.telecrmStatus}
+                  </span>
+                </div>
+                {scan.sourceUrl && (
+                  <a
+                    href={scan.sourceUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="block truncate text-sm font-medium text-primary underline-offset-4 hover:underline"
+                  >
+                    {scan.sourceUrl}
+                  </a>
+                )}
+                {scan.telecrmLeadIds && (
+                  <p className="text-xs text-muted-foreground">TeleCRM lead: {scan.telecrmLeadIds}</p>
+                )}
+                {scan.telecrmError && (
+                  <p className="line-clamp-2 text-xs font-medium text-red-600">
+                    TeleCRM: {scan.telecrmError}
+                  </p>
+                )}
                 <p className="text-xs text-muted-foreground">
                   {new Date(scan.createdAt).toLocaleString(undefined, { year: "numeric", month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" })}
                 </p>
@@ -161,6 +205,8 @@ export default async function DashboardPage({
           <p className="mt-1 text-muted-foreground">
             {filteredScans.length} filtered {filteredScans.length === 1 ? "record" : "records"}
             {" "}from {scans.length} total
+            {" "} | {syncedScans.length} TeleCRM synced
+            {telecrmErrorScans.length > 0 ? ` | ${telecrmErrorScans.length} TeleCRM errors` : ""}
           </p>
         </div>
 

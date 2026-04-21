@@ -99,6 +99,7 @@ export function ResultsView({ formData, capturedImage, onBack }: ResultsViewProp
           location: detailsForm.location,
           problem,
           imageData: capturedImage ?? "",
+          sourceUrl: window.location.href,
         }),
       })
       if (!saveRes.ok) {

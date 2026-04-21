@@ -85,6 +85,7 @@ export function SkinResultsView({ formData, capturedImage, onBack }: SkinResults
           phone: pdfForm.phone,
           problem,
           imageData: capturedImage ?? "",
+          sourceUrl: window.location.href,
         }),
       })
 
