@@ -20,6 +20,8 @@ export default function Home() {
   const [formData, setFormData] = useState<FormData>({
     name: "",
     phone: "",
+    email: "",
+    location: "",
     problem: "",
   })
   const [capturedImage, setCapturedImage] = useState<string | null>(null)
@@ -44,7 +46,7 @@ export default function Home() {
 
   const handleBackToHome = () => {
     setAppState("landing")
-    setFormData({ name: "", phone: "", problem: "" })
+    setFormData({ name: "", phone: "", email: "", location: "", problem: "" })
     setCapturedImage(null)
   }
 

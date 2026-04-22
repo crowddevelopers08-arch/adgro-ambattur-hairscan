@@ -15,6 +15,8 @@ export default function SkinPage() {
   const [formData, setFormData] = useState<SkinFormData>({
     name: "",
     phone: "",
+    email: "",
+    location: "",
     problem: "",
   })
   const [capturedImage, setCapturedImage] = useState<string | null>(null)
@@ -39,7 +41,7 @@ export default function SkinPage() {
 
   const handleBackToHome = () => {
     setAppState("landing")
-    setFormData({ name: "", phone: "", problem: "" })
+    setFormData({ name: "", phone: "", email: "", location: "", problem: "" })
     setCapturedImage(null)
   }
 

@@ -6,6 +6,7 @@ import { ArrowLeft, CheckCircle2, ChevronRight, FileText, Loader2, Phone } from 
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import type { FormData } from "./form-modal"
 import type { HairProblemKey } from "./hair-report-details"
 import { REPORT_STORAGE_KEY } from "./report-page"
@@ -70,7 +71,12 @@ export function ResultsView({ formData, capturedImage, onBack }: ResultsViewProp
   const router = useRouter()
   const [detailsFormOpen, setDetailsFormOpen] = useState(false)
   const [submitting, setSubmitting] = useState(false)
-  const [detailsForm, setDetailsForm] = useState({ name: formData.name || "", phone: formData.phone || "" })
+  const [detailsForm, setDetailsForm] = useState({
+    name: formData.name || "",
+    phone: formData.phone || "",
+    email: formData.email || "",
+    location: formData.location || "",
+  })
   const [submitError, setSubmitError] = useState<string | null>(null)
 
   const problem = (formData.problem || "hair-fall") as HairProblemKey
@@ -78,7 +84,12 @@ export function ResultsView({ formData, capturedImage, onBack }: ResultsViewProp
   const RED = "#ea2424"
 
   const handleViewReport = () => {
-    setDetailsForm({ name: formData.name || "", phone: formData.phone || "" })
+    setDetailsForm({
+      name: formData.name || "",
+      phone: formData.phone || "",
+      email: formData.email || "",
+      location: formData.location || "",
+    })
     setSubmitError(null)
     setDetailsFormOpen(true)
   }
@@ -94,14 +105,15 @@ export function ResultsView({ formData, capturedImage, onBack }: ResultsViewProp
         body: JSON.stringify({
           name: detailsForm.name,
           phone: detailsForm.phone,
-          location: "",
+          email: detailsForm.email,
+          location: detailsForm.location,
           problem,
           imageData: capturedImage ?? "",
           sourceUrl: window.location.href,
         }),
       })
-      if (!saveRes.ok) {
-        const payload = await saveRes.json().catch(() => ({ error: "Failed to save scan" }))
+      const payload = await saveRes.json().catch(() => ({ error: "Failed to save scan" }))
+      if (!saveRes.ok || payload?.success === false) {
         throw new Error(payload?.error || "Failed to save scan")
       }
       setDetailsFormOpen(false)
@@ -351,9 +363,30 @@ export function ResultsView({ formData, capturedImage, onBack }: ResultsViewProp
                 />
                 {submitError && <p style={{ fontSize: "0.78rem", fontWeight: 600, color: "#ea2424" }}>{submitError}</p>}
               </div>
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="report-email" style={{ fontWeight: 600, fontSize: "0.85rem", color: "#1a1a1a" }}>Email</Label>
+                <Input
+                  id="report-email"
+                  type="email"
+                  placeholder="Enter your email address"
+                  value={detailsForm.email}
+                  onChange={(e) => setDetailsForm({ ...detailsForm, email: e.target.value })}
+                  style={{ height: 44, borderRadius: "10px", fontFamily: "inherit", fontSize: "0.9rem" }}
+                />
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="report-location" style={{ fontWeight: 600, fontSize: "0.85rem", color: "#1a1a1a" }}>Area</Label>
+                <Input
+                  id="report-location"
+                  placeholder="Enter your area"
+                  value={detailsForm.location}
+                  onChange={(e) => setDetailsForm({ ...detailsForm, location: e.target.value })}
+                  style={{ height: 44, borderRadius: "10px", fontFamily: "inherit", fontSize: "0.9rem" }}
+                />
+              </div>
               <button
                 type="submit"
-                disabled={!detailsForm.name.trim() || !detailsForm.phone.trim()}
+                disabled={!detailsForm.name.trim() || !detailsForm.phone.trim() || !detailsForm.email.trim() || !detailsForm.location}
                 style={{
                   marginTop: "4px", width: "100%",
                   background: "linear-gradient(135deg, #ea2424, #c91f1f)",
@@ -362,7 +395,7 @@ export function ResultsView({ formData, capturedImage, onBack }: ResultsViewProp
                   cursor: "pointer",
                   boxShadow: "0 6px 20px rgba(234,36,36,0.3)",
                   display: "flex", alignItems: "center", justifyContent: "center", gap: "8px",
-                  opacity: (!detailsForm.name.trim() || !detailsForm.phone.trim()) ? 0.5 : 1,
+                  opacity: (!detailsForm.name.trim() || !detailsForm.phone.trim() || !detailsForm.email.trim() || !detailsForm.location) ? 0.5 : 1,
                   transition: "all 0.2s",
                   fontFamily: "inherit",
                 }}

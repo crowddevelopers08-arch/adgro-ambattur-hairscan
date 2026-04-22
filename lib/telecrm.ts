@@ -1,6 +1,7 @@
 type TelecrmLeadInput = {
   name: string
   phone: string
+  email?: string
   location?: string
   problem: string
   formName: string
@@ -50,6 +51,7 @@ export async function syncLeadToTelecrm(input: TelecrmLeadInput): Promise<Telecr
     fields: {
       phone: normalizePhone(input.phone),
       name: input.name.trim(),
+      email: input.email?.trim() || "",
       location: input.location?.trim() || "",
       problem: input.problem,
       form_name: input.formName,
@@ -62,6 +64,7 @@ export async function syncLeadToTelecrm(input: TelecrmLeadInput): Promise<Telecr
         fields: {
           name: input.name.trim(),
           phone: normalizePhone(input.phone),
+          email: input.email?.trim() || "",
           location: input.location?.trim() || "",
           problem: input.problem,
           form_name: input.formName,

@@ -10,6 +10,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 export type FormData = {
   name: string
   phone: string
+  email: string
+  location: string
   problem: "hair-fall" | "crown-thinning" | "frontal-hair-loss" | "dandruff-scalp-issues" | "low-hair-density" | ""
 }
 
@@ -23,6 +25,8 @@ export function FormModal({ open, onOpenChange, onSubmit }: FormModalProps) {
   const [formData, setFormData] = useState<FormData>({
     name: "",
     phone: "",
+    email: "",
+    location: "",
     problem: "",
   })
   const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({})
@@ -40,6 +44,16 @@ export function FormModal({ open, onOpenChange, onSubmit }: FormModalProps) {
       newErrors.phone = "Please enter a valid phone number"
     }
 
+    if (!formData.email.trim()) {
+      newErrors.email = "Email is required"
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = "Please enter a valid email address"
+    }
+
+    if (!formData.location.trim()) {
+      newErrors.location = "Area is required"
+    }
+
     if (!formData.problem) {
       newErrors.problem = "Please select a problem"
     }
@@ -48,11 +62,11 @@ export function FormModal({ open, onOpenChange, onSubmit }: FormModalProps) {
     return Object.keys(newErrors).length === 0
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (validate()) {
       onSubmit(formData)
-      setFormData({ name: "", phone: "", problem: "" })
+      setFormData({ name: "", phone: "", email: "", location: "", problem: "" })
       setErrors({})
     }
   }
@@ -96,6 +110,35 @@ export function FormModal({ open, onOpenChange, onSubmit }: FormModalProps) {
               className="border-border/50 bg-background/50 focus:border-primary focus:ring-primary"
             />
             {errors.phone && <p className="text-sm text-destructive">{errors.phone}</p>}
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="email" className="text-foreground">
+              Email
+            </Label>
+            <Input
+              id="email"
+              type="email"
+              placeholder="Enter your email address"
+              value={formData.email}
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              className="border-border/50 bg-background/50 focus:border-primary focus:ring-primary"
+            />
+            {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="location" className="text-foreground">
+              Area
+            </Label>
+            <Input
+              id="location"
+              placeholder="Enter your area"
+              value={formData.location}
+              onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+              className="border-border/50 bg-background/50 focus:border-primary focus:ring-primary"
+            />
+            {errors.location && <p className="text-sm text-destructive">{errors.location}</p>}
           </div>
 
           <div className="flex flex-col gap-2">

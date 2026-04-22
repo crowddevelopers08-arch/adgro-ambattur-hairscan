@@ -6,7 +6,7 @@ export const runtime = "nodejs"
 
 export async function POST(req: NextRequest) {
   try {
-    const { name, phone, location, problem, imageData, sourceUrl } = await req.json()
+    const { name, phone, email, location, problem, imageData, sourceUrl } = await req.json()
 
     if (!name || !phone || !problem || !imageData) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
@@ -36,35 +36,35 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    const telecrmSync = await syncLeadToTelecrm({
-      name,
-      phone: normalizedPhone,
-      location,
-      problem,
-      formName,
-      sourceUrl: normalizedSourceUrl,
-    })
-
-    const scan = await prisma.scan
-      .create({
-        data: {
-          name,
-          phone: normalizedPhone,
-          location: location ?? "",
-          problem,
-          imageData,
-          formName,
-          sourceUrl: normalizedSourceUrl,
-          telecrmStatus: telecrmSync.status,
-          telecrmLeadIds: telecrmSync.leadIds.join(", "),
-          telecrmError: telecrmSync.error,
-        },
-      })
-      .catch((error) => {
-        databaseError = error instanceof Error ? error.message : "Database save failed."
-        console.error("Failed to save scan in database:", error)
-        return null
-      })
+    const [telecrmSync, scan] = await Promise.all([
+      syncLeadToTelecrm({
+        name,
+        phone: normalizedPhone,
+        email: typeof email === "string" ? email.trim() : "",
+        location,
+        problem,
+        formName,
+        sourceUrl: normalizedSourceUrl,
+      }),
+      prisma.scan
+        .create({
+          data: {
+            name,
+            phone: normalizedPhone,
+            email: typeof email === "string" ? email.trim() : "",
+            location: location ?? "",
+            problem,
+            imageData,
+            formName,
+            sourceUrl: normalizedSourceUrl,
+          },
+        })
+        .catch((error) => {
+          databaseError = error instanceof Error ? error.message : "Database save failed."
+          console.error("Failed to save scan in database:", error)
+          return null
+        }),
+    ])
 
     const database = {
       status: scan ? "saved" : "error",
@@ -74,14 +74,38 @@ export async function POST(req: NextRequest) {
     const telecrmStatus = telecrmSync.status.toLowerCase()
     const telecrmSubmitted = telecrmStatus !== "error" && telecrmStatus !== "skipped"
 
-    if (!scan && !telecrmSubmitted) {
+    const databaseSaved = Boolean(scan)
+
+    if (scan) {
+      await prisma.scan
+        .update({
+          where: { id: scan.id },
+          data: {
+            telecrmStatus: telecrmSync.status,
+            telecrmLeadIds: telecrmSync.leadIds.join(", "),
+            telecrmError: telecrmSync.error,
+          },
+        })
+        .catch((error) => {
+          console.error("Failed to update TeleCRM status in database:", error)
+        })
+    }
+
+    if (!databaseSaved || !telecrmSubmitted) {
       return NextResponse.json(
         {
-          error: "Failed to submit lead to TeleCRM and database.",
+          success: false,
+          partial: databaseSaved || telecrmSubmitted,
+          error:
+            databaseSaved && !telecrmSubmitted
+              ? "Lead saved in database, but TeleCRM sync failed."
+              : !databaseSaved && telecrmSubmitted
+                ? "Lead sent to TeleCRM, but database save failed."
+                : "Failed to save lead in database and TeleCRM.",
           telecrm: telecrmSync,
           database,
         },
-        { status: 500 },
+        { status: databaseSaved || telecrmSubmitted ? 207 : 500 },
       )
     }
 

@@ -159,8 +159,11 @@ export default async function DashboardPage({
                   <p className="text-xs text-muted-foreground">#{scan.id}</p>
                 </div>
                 <p className="text-sm text-muted-foreground">{scan.phone}</p>
+                {scan.email && (
+                  <p className="text-sm text-muted-foreground">{scan.email}</p>
+                )}
                 {scan.location && (
-                  <p className="text-sm text-muted-foreground">{scan.location}</p>
+                  <p className="text-sm font-medium text-muted-foreground capitalize">{scan.location}</p>
                 )}
                 <div className="flex flex-wrap gap-2 pt-1">
                   <span className="rounded-full border border-border bg-muted px-3 py-1 text-xs font-medium text-foreground">

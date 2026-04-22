@@ -24,7 +24,7 @@ export function HeroSection({ onStartScan }: HeroSectionProps) {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (!validate()) return
-    onStartScan({ name: "", phone: "", problem })
+    onStartScan({ name: "", phone: "", email: "", location: "", problem })
     setShowForm(false)
   }
 

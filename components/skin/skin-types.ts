@@ -12,5 +12,7 @@ export type SkinProblem =
 export type SkinFormData = {
   name: string
   phone: string
+  email: string
+  location: string
   problem: SkinProblem
 }

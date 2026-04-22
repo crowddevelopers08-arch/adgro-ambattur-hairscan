@@ -7,6 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { FileText, ArrowLeft, CheckCircle2, Loader2 } from "lucide-react"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import type { SkinFormData } from "./skin-types"
 import { REPORT_STORAGE_KEY } from "@/components/report-page"
 
@@ -61,13 +62,23 @@ export function SkinResultsView({ formData, capturedImage, onBack }: SkinResults
   const router = useRouter()
   const [pdfFormOpen, setPdfFormOpen] = useState(false)
   const [pdfGenerating, setPdfGenerating] = useState(false)
-  const [pdfForm, setPdfForm] = useState({ name: formData.name || "", phone: formData.phone || "" })
+  const [pdfForm, setPdfForm] = useState({
+    name: formData.name || "",
+    phone: formData.phone || "",
+    email: formData.email || "",
+    location: formData.location || "",
+  })
 
   const problem = (formData.problem || "acne") as SkinProblemKey
   const data = resultsData[problem]
 
   const handleDownload = () => {
-    setPdfForm({ name: formData.name || "", phone: formData.phone || "" })
+    setPdfForm({
+      name: formData.name || "",
+      phone: formData.phone || "",
+      email: formData.email || "",
+      location: formData.location || "",
+    })
     setPdfFormOpen(true)
   }
 
@@ -83,14 +94,16 @@ export function SkinResultsView({ formData, capturedImage, onBack }: SkinResults
         body: JSON.stringify({
           name: pdfForm.name,
           phone: pdfForm.phone,
+          email: pdfForm.email,
+          location: pdfForm.location,
           problem,
           imageData: capturedImage ?? "",
           sourceUrl: window.location.href,
         }),
       })
 
-      if (!saveRes.ok) {
-        const payload = await saveRes.json().catch(() => ({ error: "Failed to save scan" }))
+      const payload = await saveRes.json().catch(() => ({ error: "Failed to save scan" }))
+      if (!saveRes.ok || payload?.success === false) {
         throw new Error(payload?.error || "Failed to save scan")
       }
 
@@ -224,7 +237,15 @@ export function SkinResultsView({ formData, capturedImage, onBack }: SkinResults
                 <Label htmlFor="skin-pdf-phone" className="text-foreground">Phone Number</Label>
                 <Input id="skin-pdf-phone" type="tel" placeholder="Enter your phone number" value={pdfForm.phone} onChange={(e) => setPdfForm({ ...pdfForm, phone: e.target.value })} className="border-border/50 bg-background/50 focus:border-primary focus:ring-primary" />
               </div>
-              <Button type="submit" disabled={!pdfForm.name.trim() || !pdfForm.phone.trim()} className="mt-2 w-full bg-primary text-primary-foreground transition-all hover:bg-primary/90 hover:shadow-[0_0_20px_rgba(221,185,90,0.4)] disabled:opacity-50">
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="skin-pdf-email" className="text-foreground">Email</Label>
+                <Input id="skin-pdf-email" type="email" placeholder="Enter your email address" value={pdfForm.email} onChange={(e) => setPdfForm({ ...pdfForm, email: e.target.value })} className="border-border/50 bg-background/50 focus:border-primary focus:ring-primary" />
+              </div>
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="skin-pdf-location" className="text-foreground">Area</Label>
+                <Input id="skin-pdf-location" placeholder="Enter your area" value={pdfForm.location} onChange={(e) => setPdfForm({ ...pdfForm, location: e.target.value })} className="border-border/50 bg-background/50 focus:border-primary focus:ring-primary" />
+              </div>
+              <Button type="submit" disabled={!pdfForm.name.trim() || !pdfForm.phone.trim() || !pdfForm.email.trim() || !pdfForm.location} className="mt-2 w-full bg-primary text-primary-foreground transition-all hover:bg-primary/90 hover:shadow-[0_0_20px_rgba(221,185,90,0.4)] disabled:opacity-50">
                 <FileText className="mr-2 h-4 w-4" />
                 View Report
               </Button>
