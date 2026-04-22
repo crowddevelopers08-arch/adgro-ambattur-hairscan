@@ -16,10 +16,18 @@ export async function POST(req: NextRequest) {
     const formName = "website leads"
     const normalizedSourceUrl = typeof sourceUrl === "string" ? sourceUrl.trim() : ""
 
-    const existing = await prisma.scan.findFirst({
-      where: { phone: normalizedPhone },
-      select: { id: true },
-    })
+    let databaseError = ""
+
+    const existing = await prisma.scan
+      .findFirst({
+        where: { phone: normalizedPhone },
+        select: { id: true },
+      })
+      .catch((error) => {
+        databaseError = error instanceof Error ? error.message : "Database duplicate check failed."
+        console.error("Failed to check existing scan:", error)
+        return null
+      })
 
     if (existing) {
       return NextResponse.json(
@@ -37,22 +45,47 @@ export async function POST(req: NextRequest) {
       sourceUrl: normalizedSourceUrl,
     })
 
-    const scan = await prisma.scan.create({
-      data: {
-        name,
-        phone: normalizedPhone,
-        location: location ?? "",
-        problem,
-        imageData,
-        formName,
-        sourceUrl: normalizedSourceUrl,
-        telecrmStatus: telecrmSync.status,
-        telecrmLeadIds: telecrmSync.leadIds.join(", "),
-        telecrmError: telecrmSync.error,
-      },
-    })
+    const scan = await prisma.scan
+      .create({
+        data: {
+          name,
+          phone: normalizedPhone,
+          location: location ?? "",
+          problem,
+          imageData,
+          formName,
+          sourceUrl: normalizedSourceUrl,
+          telecrmStatus: telecrmSync.status,
+          telecrmLeadIds: telecrmSync.leadIds.join(", "),
+          telecrmError: telecrmSync.error,
+        },
+      })
+      .catch((error) => {
+        databaseError = error instanceof Error ? error.message : "Database save failed."
+        console.error("Failed to save scan in database:", error)
+        return null
+      })
 
-    return NextResponse.json({ success: true, id: scan.id, telecrm: telecrmSync })
+    const database = {
+      status: scan ? "saved" : "error",
+      id: scan?.id ?? null,
+      error: scan ? "" : databaseError,
+    }
+    const telecrmStatus = telecrmSync.status.toLowerCase()
+    const telecrmSubmitted = telecrmStatus !== "error" && telecrmStatus !== "skipped"
+
+    if (!scan && !telecrmSubmitted) {
+      return NextResponse.json(
+        {
+          error: "Failed to submit lead to TeleCRM and database.",
+          telecrm: telecrmSync,
+          database,
+        },
+        { status: 500 },
+      )
+    }
+
+    return NextResponse.json({ success: true, id: scan?.id ?? null, telecrm: telecrmSync, database })
   } catch (error) {
     console.error("Failed to save scan:", error)
     const message =
