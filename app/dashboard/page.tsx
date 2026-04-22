@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma"
 import { DateRangePicker } from "@/components/ui/date-range-picker"
+import { Download } from "lucide-react"
 
 export const dynamic = "force-dynamic"
 export const revalidate = 0
@@ -88,6 +89,14 @@ export default async function DashboardPage({
   const selectedProblem = resolvedSearchParams.problem ?? ""
   const selectedDateFrom = resolvedSearchParams.dateFrom ?? ""
   const selectedDateTo = resolvedSearchParams.dateTo ?? ""
+  const exportParams = new URLSearchParams()
+
+  if (resolvedSearchParams.q) exportParams.set("q", resolvedSearchParams.q)
+  if (selectedProblem) exportParams.set("problem", selectedProblem)
+  if (selectedDateFrom) exportParams.set("dateFrom", selectedDateFrom)
+  if (selectedDateTo) exportParams.set("dateTo", selectedDateTo)
+
+  const exportHref = `/api/export-leads${exportParams.toString() ? `?${exportParams.toString()}` : ""}`
 
   const scans = await prisma.scan.findMany({
     orderBy: { createdAt: "desc" },
@@ -200,14 +209,23 @@ export default async function DashboardPage({
   return (
     <main className="min-h-screen bg-background p-6">
       <div className="mx-auto max-w-7xl space-y-8">
-        <div className="border-b border-border pb-6">
-          <h1 className="text-3xl font-bold text-foreground">Scan Dashboard</h1>
-          <p className="mt-1 text-muted-foreground">
-            {filteredScans.length} filtered {filteredScans.length === 1 ? "record" : "records"}
-            {" "}from {scans.length} total
-            {" "} | {syncedScans.length} TeleCRM synced
-            {telecrmErrorScans.length > 0 ? ` | ${telecrmErrorScans.length} TeleCRM errors` : ""}
-          </p>
+        <div className="flex flex-wrap items-start justify-between gap-4 border-b border-border pb-6">
+          <div>
+            <h1 className="text-3xl font-bold text-foreground">Scan Dashboard</h1>
+            <p className="mt-1 text-muted-foreground">
+              {filteredScans.length} filtered {filteredScans.length === 1 ? "record" : "records"}
+              {" "}from {scans.length} total
+              {" "} | {syncedScans.length} TeleCRM synced
+              {telecrmErrorScans.length > 0 ? ` | ${telecrmErrorScans.length} TeleCRM errors` : ""}
+            </p>
+          </div>
+          <a
+            href={exportHref}
+            className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-primary px-5 text-sm font-semibold text-primary-foreground transition hover:opacity-90"
+          >
+            <Download className="h-4 w-4" />
+            Download Excel
+          </a>
         </div>
 
         <form className="grid gap-4 rounded-3xl border border-border bg-card/60 p-5 shadow-sm md:grid-cols-4">
